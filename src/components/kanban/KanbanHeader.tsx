@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Badge } from "../ui/badge";
-import { Search, SortAsc, Filter, Settings, Plus } from "lucide-react";
+import { Search, SortAsc, Filter, Plus } from "lucide-react";
 import {
   type SortOption,
   type FilterOption,
@@ -135,10 +135,6 @@ const KanbanHeader: React.FC = () => {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Settings className="w-4 h-4 mr-2" />
-            Settings
-          </Button>
           <Dialog open={isQuickAddOpen} onOpenChange={setIsQuickAddOpen}>
             <DialogTrigger asChild>
               <Button size="sm">
