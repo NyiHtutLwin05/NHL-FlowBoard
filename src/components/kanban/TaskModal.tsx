@@ -1,11 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import {
-  type Task,
-  type TaskPriority,
-  type TaskLabel,
-} from "../../types/kanban";
+import { type Task, type TaskPriority } from "../../types/kanban";
 import { updateTask } from "../../store/kanbanSlice";
 import { formatDate } from "@/utils/taskHelpers";
 import { useToast } from "../../hooks/use-toast";
@@ -87,9 +83,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose }) => {
     onClose();
   };
 
-  const currentPriority = priorityOptions.find(
-    (p) => p.value === task.priority
-  );
+  // const currentPriority = priorityOptions.find(
+  //   (p) => p.value === task.priority
+  // );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

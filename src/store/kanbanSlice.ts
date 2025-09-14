@@ -49,12 +49,21 @@ const initialBoard: KanbanBoard = {
   updatedAt: new Date().toISOString(),
 };
 
-// Load from localStorage if available
 const loadBoardFromStorage = (): KanbanBoard => {
   try {
     const saved = localStorage.getItem("kanban-board");
     if (saved) {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+
+      return {
+        id: parsed.id || initialBoard.id,
+        title: parsed.title || initialBoard.title,
+        columns: parsed.columns || initialBoard.columns,
+        tasks: parsed.tasks || initialBoard.tasks,
+        columnOrder: parsed.columnOrder || initialBoard.columnOrder,
+        createdAt: parsed.createdAt || initialBoard.createdAt,
+        updatedAt: parsed.updatedAt || initialBoard.updatedAt,
+      };
     }
   } catch (error) {
     console.warn("Failed to load board from localStorage:", error);
@@ -109,7 +118,24 @@ const kanbanSlice = createSlice({
         updatedAt: now,
       };
 
+      if (!state.board.tasks) {
+        state.board.tasks = {};
+      }
+
       state.board.tasks[taskId] = newTask;
+
+      if (!state.board.columns) {
+        state.board.columns = {};
+      }
+      if (!state.board.columns[columnId]) {
+        state.board.columns[columnId] = {
+          id: columnId,
+          title: "New Column",
+          taskIds: [],
+          color: "blue",
+        };
+      }
+
       state.board.columns[columnId].taskIds.push(taskId);
       state.board.updatedAt = now;
     },
@@ -122,7 +148,7 @@ const kanbanSlice = createSlice({
       }>
     ) => {
       const { taskId, updates } = action.payload;
-      if (state.board.tasks[taskId]) {
+      if (state.board.tasks && state.board.tasks[taskId]) {
         state.board.tasks[taskId] = {
           ...state.board.tasks[taskId],
           ...updates,
@@ -136,12 +162,16 @@ const kanbanSlice = createSlice({
       const taskId = action.payload;
 
       // Remove from all columns
-      Object.values(state.board.columns).forEach((column) => {
-        column.taskIds = column.taskIds.filter((id) => id !== taskId);
-      });
+      if (state.board.columns) {
+        Object.values(state.board.columns).forEach((column) => {
+          column.taskIds = column.taskIds.filter((id) => id !== taskId);
+        });
+      }
 
       // Remove from tasks
-      delete state.board.tasks[taskId];
+      if (state.board.tasks) {
+        delete state.board.tasks[taskId];
+      }
       state.board.updatedAt = new Date().toISOString();
     },
 
@@ -163,10 +193,26 @@ const kanbanSlice = createSlice({
         destinationIndex,
       } = action.payload;
 
+      // Ensure columns exist
+      if (!state.board.columns) {
+        state.board.columns = {};
+      }
+
       // Remove from source
-      state.board.columns[sourceColumnId].taskIds.splice(sourceIndex, 1);
+      if (state.board.columns[sourceColumnId]) {
+        state.board.columns[sourceColumnId].taskIds.splice(sourceIndex, 1);
+      }
 
       // Add to destination
+      if (!state.board.columns[destinationColumnId]) {
+        state.board.columns[destinationColumnId] = {
+          id: destinationColumnId,
+          title: "New Column",
+          taskIds: [],
+          color: "blue",
+        };
+      }
+
       state.board.columns[destinationColumnId].taskIds.splice(
         destinationIndex,
         0,
@@ -185,13 +231,27 @@ const kanbanSlice = createSlice({
       }>
     ) => {
       const { columnId, sourceIndex, destinationIndex } = action.payload;
+
+      // Ensure columns exist
+      if (!state.board.columns) {
+        state.board.columns = {};
+      }
+      if (!state.board.columns[columnId]) {
+        state.board.columns[columnId] = {
+          id: columnId,
+          title: "New Column",
+          taskIds: [],
+          color: "blue",
+        };
+      }
+
       const column = state.board.columns[columnId];
       const [removed] = column.taskIds.splice(sourceIndex, 1);
       column.taskIds.splice(destinationIndex, 0, removed);
       state.board.updatedAt = new Date().toISOString();
     },
 
-    // Column actions
+    // Column actions - FIXED addColumn
     addColumn: (
       state,
       action: PayloadAction<{
@@ -210,7 +270,18 @@ const kanbanSlice = createSlice({
         color,
       };
 
+      // Ensure columns object exists
+      if (!state.board.columns) {
+        state.board.columns = {};
+      }
+
       state.board.columns[columnId] = newColumn;
+
+      // Ensure columnOrder array exists
+      if (!state.board.columnOrder) {
+        state.board.columnOrder = [];
+      }
+
       state.board.columnOrder.push(columnId);
       state.board.updatedAt = now;
     },
@@ -223,7 +294,7 @@ const kanbanSlice = createSlice({
       }>
     ) => {
       const { columnId, updates } = action.payload;
-      if (state.board.columns[columnId]) {
+      if (state.board.columns && state.board.columns[columnId]) {
         state.board.columns[columnId] = {
           ...state.board.columns[columnId],
           ...updates,
@@ -234,19 +305,27 @@ const kanbanSlice = createSlice({
 
     deleteColumn: (state, action: PayloadAction<string>) => {
       const columnId = action.payload;
-      const column = state.board.columns[columnId];
 
-      if (column) {
+      if (state.board.columns && state.board.columns[columnId]) {
+        const column = state.board.columns[columnId];
+
         // Delete all tasks in the column
-        column.taskIds.forEach((taskId) => {
-          delete state.board.tasks[taskId];
-        });
+        if (state.board.tasks) {
+          column.taskIds.forEach((taskId) => {
+            delete state.board.tasks[taskId];
+          });
+        }
 
         // Remove column
         delete state.board.columns[columnId];
-        state.board.columnOrder = state.board.columnOrder.filter(
-          (id) => id !== columnId
-        );
+
+        // Remove from columnOrder
+        if (state.board.columnOrder) {
+          state.board.columnOrder = state.board.columnOrder.filter(
+            (id) => id !== columnId
+          );
+        }
+
         state.board.updatedAt = new Date().toISOString();
       }
     },
@@ -259,6 +338,12 @@ const kanbanSlice = createSlice({
       }>
     ) => {
       const { sourceIndex, destinationIndex } = action.payload;
+
+      // Ensure columnOrder exists
+      if (!state.board.columnOrder) {
+        state.board.columnOrder = [];
+      }
+
       const [removed] = state.board.columnOrder.splice(sourceIndex, 1);
       state.board.columnOrder.splice(destinationIndex, 0, removed);
       state.board.updatedAt = new Date().toISOString();

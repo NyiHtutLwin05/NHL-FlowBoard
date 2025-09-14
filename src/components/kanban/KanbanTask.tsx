@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Draggable } from "@hello-pangea/dnd";
 import { useDispatch } from "react-redux";
-import { motion } from "framer-motion";
 import { type Task, type TaskPriority } from "../../types/kanban";
 import { updateTask, deleteTask } from "../../store/kanbanSlice";
 import { formatDate, isOverdue } from "../../utils/taskHelpers";
@@ -14,7 +13,6 @@ import { Textarea } from "../ui/textarea";
 import TaskModal from "./TaskModal";
 import {
   Calendar,
-  Clock,
   Edit2,
   Trash2,
   MoreHorizontal,

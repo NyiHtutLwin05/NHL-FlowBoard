@@ -96,6 +96,10 @@ const KanbanBoard: React.FC = () => {
     }
   };
 
+  // Add safe access to board data
+  const columnOrder = board?.columnOrder || [];
+  const columns = board?.columns || {};
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
@@ -111,8 +115,8 @@ const KanbanBoard: React.FC = () => {
                   snapshot.isDraggingOver ? "bg-muted/20 rounded-2xl p-4" : ""
                 }`}
               >
-                {board.columnOrder.map((columnId, index) => {
-                  const column = board.columns[columnId];
+                {columnOrder.map((columnId, index) => {
+                  const column = columns[columnId];
                   if (!column) return null;
 
                   return (
@@ -125,7 +129,7 @@ const KanbanBoard: React.FC = () => {
                     >
                       <KanbanColumn
                         column={column}
-                        tasks={board.tasks}
+                        tasks={board?.tasks || {}}
                         index={index}
                         searchQuery={searchQuery}
                         sortBy={sortBy}
@@ -139,7 +143,7 @@ const KanbanBoard: React.FC = () => {
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: board.columnOrder.length * 0.1 }}
+                  transition={{ delay: columnOrder.length * 0.1 }}
                   className="flex-shrink-0"
                 >
                   <Dialog
