@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { type Task, type TaskPriority } from "../../types/kanban";
-import { updateTask } from "../../store/kanbanSlice";
+import { updateTask, deleteTask } from "../../store/kanbanSlice";
 import { formatDate } from "@/utils/taskHelpers";
 import { useToast } from "../../hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Calendar, Clock, Flag, Save, X } from "lucide-react";
+import { Calendar, Clock, Flag, Save, X, Edit2, Trash2 } from "lucide-react";
 
 export interface TaskModalProps {
   task: Task;
@@ -91,17 +91,48 @@ const TaskModal: React.FC<TaskModalProps> = ({
     onClose();
   };
 
-  // const currentPriority = priorityOptions.find(
-  //   (p) => p.value === task.priority
-  // );
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      dispatch(deleteTask(task.id));
+      toast({
+        title: "Task deleted",
+        description: "Your task has been successfully deleted.",
+        variant: "destructive",
+      });
+      onDelete();
+      onClose();
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Flag className="w-5 h-5" />
-            Edit Task
+          <DialogTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Flag className="w-5 h-5" />
+              Task Details
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onEdit}
+                className="flex items-center gap-2"
+              >
+                <Edit2 className="w-4 h-4" />
+                Quick Edit
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleDelete}
+                className="flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete
+              </Button>
+            </div>
           </DialogTitle>
         </DialogHeader>
 
