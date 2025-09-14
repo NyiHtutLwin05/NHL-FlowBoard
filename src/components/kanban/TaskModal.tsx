@@ -28,10 +28,12 @@ import {
 } from "../ui/select";
 import { Calendar, Clock, Flag, Save, X } from "lucide-react";
 
-interface TaskModalProps {
+export interface TaskModalProps {
   task: Task;
   isOpen: boolean;
   onClose: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
 interface FormData {
@@ -49,7 +51,13 @@ const priorityOptions: { value: TaskPriority; label: string; color: string }[] =
     { value: "urgent", label: "Urgent", color: "text-red-600" },
   ];
 
-const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose }) => {
+const TaskModal: React.FC<TaskModalProps> = ({
+  task,
+  isOpen,
+  onClose,
+  onEdit,
+  onDelete,
+}) => {
   const dispatch = useDispatch();
   const { toast } = useToast();
 

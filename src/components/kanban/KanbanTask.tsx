@@ -18,6 +18,7 @@ import {
   MoreHorizontal,
   AlertCircle,
   Flag,
+  GripVertical,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -106,11 +107,11 @@ const KanbanTask: React.FC<KanbanTaskProps> = ({ task, index }) => {
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          {...provided.dragHandleProps}
+          className="mb-2"
         >
           <Card
-            className={`kanban-task ${
-              snapshot.isDragging ? "dragging shadow-2xl" : ""
+            className={`kanban-task group ${
+              snapshot.isDragging ? "dragging shadow-2xl rotate-2" : ""
             } ${isTaskOverdue ? "border-destructive/50" : ""}`}
           >
             <CardContent className="p-4">
@@ -142,10 +143,14 @@ const KanbanTask: React.FC<KanbanTaskProps> = ({ task, index }) => {
               ) : (
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
-                    <h4
-                      className="font-medium text-sm leading-5 cursor-pointer hover:text-primary/80 transition-colors flex-1"
-                      onClick={() => setIsModalOpen(true)}
+                    <div
+                      {...provided.dragHandleProps}
+                      className="cursor-grab active:cursor-grabbing mr-1 mt-0.5 text-muted-foreground hover:text-foreground transition-colors"
                     >
+                      <GripVertical className="h-4 w-4" />
+                    </div>
+
+                    <h4 className="font-medium text-sm leading-5 cursor-pointer hover:text-primary/80 transition-colors flex-1">
                       {task.title}
                     </h4>
 
@@ -154,19 +159,19 @@ const KanbanTask: React.FC<KanbanTaskProps> = ({ task, index }) => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="h-7 w-7 p-0 opacity-70 group-hover:opacity-100 transition-opacity"
                         >
-                          <MoreHorizontal className="h-3 w-3" />
+                          <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                        <DropdownMenuItem onClick={() => setIsModalOpen(true)}>
                           <Edit2 className="h-4 w-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={handleDelete}
-                          className="text-destructive"
+                          className="text-destructive focus:text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
@@ -179,6 +184,11 @@ const KanbanTask: React.FC<KanbanTaskProps> = ({ task, index }) => {
                     task={task}
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
+                    onEdit={() => {
+                      setIsModalOpen(false);
+                      setIsEditing(true);
+                    }}
+                    onDelete={handleDelete}
                   />
 
                   {task.description && (
@@ -192,7 +202,8 @@ const KanbanTask: React.FC<KanbanTaskProps> = ({ task, index }) => {
                       {task.labels.map((label) => (
                         <Badge
                           key={label}
-                          className={`task-label ${label} text-xs`}
+                          variant="secondary"
+                          className="text-xs"
                         >
                           {label}
                         </Badge>
@@ -204,7 +215,9 @@ const KanbanTask: React.FC<KanbanTaskProps> = ({ task, index }) => {
                     <div className="flex items-center gap-1">
                       <Badge
                         variant="secondary"
-                        className={`${priorityColors[task.priority]} text-xs`}
+                        className={`${
+                          priorityColors[task.priority]
+                        } flex items-center gap-1 text-xs`}
                       >
                         {priorityIcons[task.priority]}
                         <span className="ml-1 capitalize">{task.priority}</span>
@@ -215,13 +228,15 @@ const KanbanTask: React.FC<KanbanTaskProps> = ({ task, index }) => {
                       <div
                         className={`flex items-center gap-1 ${
                           isTaskOverdue
-                            ? "text-destructive"
+                            ? "text-destructive font-medium"
                             : "text-muted-foreground"
                         }`}
                       >
                         <Calendar className="w-3 h-3" />
                         <span>{formatDate(task.dueDate)}</span>
-                        {isTaskOverdue && <AlertCircle className="w-3 h-3" />}
+                        {isTaskOverdue && (
+                          <AlertCircle className="w-3 h-3 ml-1" />
+                        )}
                       </div>
                     )}
                   </div>

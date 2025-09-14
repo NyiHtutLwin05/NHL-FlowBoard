@@ -96,7 +96,6 @@ const KanbanBoard: React.FC = () => {
     }
   };
 
-  // Add safe access to board data
   const columnOrder = board?.columnOrder || [];
   const columns = board?.columns || {};
 
