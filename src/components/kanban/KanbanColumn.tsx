@@ -16,7 +16,13 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
-import { Plus, MoreHorizontal, Edit2, Trash2 } from "lucide-react";
+import {
+  Plus,
+  MoreHorizontal,
+  Edit2,
+  Trash2,
+  GripHorizontal,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -136,7 +142,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
           <div
             ref={provided.innerRef}
             {...provided.draggableProps}
-            className={`w-80 ${
+            className={`w-80 select-none ${
               snapshot.isDragging ? "rotate-2 scale-105" : ""
             }`}
           >
@@ -145,6 +151,12 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 snapshot.isDragging ? "shadow-xl" : ""
               }`}
             >
+              <div
+                className="flex justify-center"
+                {...provided.dragHandleProps}
+              >
+                <GripHorizontal className="h-4 w-4 text-slate-400" />
+              </div>
               <CardHeader className="pb-3" {...provided.dragHandleProps}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 flex-1">
