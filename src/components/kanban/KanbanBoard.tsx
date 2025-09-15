@@ -41,7 +41,7 @@ const KanbanBoard: React.FC = () => {
       dispatch(
         addColumn({
           title: newColumnTitle.trim(),
-          color: "blue", // default color
+          color: "blue",
         })
       );
       toast({
@@ -100,7 +100,7 @@ const KanbanBoard: React.FC = () => {
   const columns = board?.columns || {};
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background p-4 md:p-6 bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="max-w-7xl mx-auto">
         <KanbanHeader />
 
@@ -111,7 +111,9 @@ const KanbanBoard: React.FC = () => {
                 ref={provided.innerRef}
                 {...provided.droppableProps}
                 className={`flex gap-6 overflow-x-auto pb-6 ${
-                  snapshot.isDraggingOver ? "bg-muted/20 rounded-2xl p-4" : ""
+                  snapshot.isDraggingOver
+                    ? "bg-slate-200/40 rounded-xl p-3"
+                    : ""
                 }`}
               >
                 {columnOrder.map((columnId, index) => {
@@ -151,18 +153,18 @@ const KanbanBoard: React.FC = () => {
                   >
                     <DialogTrigger asChild>
                       <Button
-                        variant="outline"
-                        className="h-16 w-80 border-dashed border-2 hover:border-primary/50 hover:bg-primary/5"
+                        variant="ghost"
+                        className="h-full min-h-[500px] w-72 bg-white/70 backdrop-blur-sm border-2 border-dashed border-slate-300 hover:border-slate-400 hover:bg-white/90 rounded-xl shadow-sm flex flex-col items-center justify-center gap-2 text-slate-500 hover:text-slate-700 transition-colors"
                       >
                         <Plus className="w-5 h-5 mr-2" />
-                        Add Column
+                        <span className="text-sm font-medium">Add Column</span>
                       </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="sm:max-w-[425px] rounded-xl">
                       <DialogHeader>
                         <DialogTitle>Add New Column</DialogTitle>
                       </DialogHeader>
-                      <div className="space-y-4">
+                      <div className="space-y-4 py-2">
                         <Input
                           placeholder="Column title"
                           value={newColumnTitle}
@@ -172,7 +174,7 @@ const KanbanBoard: React.FC = () => {
                           }}
                           autoFocus
                         />
-                        <div className="flex gap-2 justify-end">
+                        <div className="flex gap-2 justify-end pt-2">
                           <Button
                             variant="outline"
                             onClick={() => setIsAddColumnDialogOpen(false)}
