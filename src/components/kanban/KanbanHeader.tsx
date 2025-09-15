@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { type RootState } from "../../store";
 import {
   setSearchQuery,
-  setSortBy,
   setFilterBy,
   updateBoardTitle,
   addTask,
@@ -19,12 +18,8 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Badge } from "../ui/badge";
-import { Search, SortAsc, Filter, Plus } from "lucide-react";
-import {
-  type SortOption,
-  type FilterOption,
-  type TaskPriority,
-} from "../../types/kanban";
+import { Search, Filter, Plus } from "lucide-react";
+import { type FilterOption, type TaskPriority } from "../../types/kanban";
 import {
   Dialog,
   DialogContent,
@@ -38,7 +33,7 @@ import { Label } from "../ui/label";
 
 const KanbanHeader: React.FC = () => {
   const dispatch = useDispatch();
-  const { board, searchQuery, sortBy, filterBy } = useSelector(
+  const { board, searchQuery, filterBy } = useSelector(
     (state: RootState) => state.kanban
   );
   const { toast } = useToast();
@@ -159,28 +154,6 @@ const KanbanHeader: React.FC = () => {
           {/* Filters and Actions */}
           <div className="flex flex-col sm:flex-row gap-3 items-center">
             <div className="flex gap-2">
-              {/* Sort */}
-              <div className="flex items-center">
-                <Select
-                  value={sortBy}
-                  onValueChange={(value: SortOption) =>
-                    dispatch(setSortBy(value))
-                  }
-                >
-                  <SelectTrigger className="w-32 rounded-lg border-slate-200 gap-2">
-                    <SortAsc className="w-4 h-4 text-slate-400" />
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-lg">
-                    <SelectItem value="none">No sorting</SelectItem>
-                    <SelectItem value="priority">Priority</SelectItem>
-                    <SelectItem value="dueDate">Due date</SelectItem>
-                    <SelectItem value="alphabetical">A-Z</SelectItem>
-                    <SelectItem value="created">Created</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
               {/* Filter */}
               <div className="flex items-center">
                 <Select
