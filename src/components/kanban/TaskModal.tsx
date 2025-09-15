@@ -108,7 +108,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
+          <DialogTitle className="flex items-center justify-around">
             <div className="flex items-center gap-2">
               <Flag className="w-5 h-5" />
               Task Details
